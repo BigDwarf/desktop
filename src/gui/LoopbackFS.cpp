@@ -2,6 +2,8 @@
 //#include "GMFinderInfo.h"
 #include "fileManager.h"
 
+#include <unistd.h>
+
 #include <sys/param.h>
 #include <sys/mount.h>
 #include <sys/ioctl.h>
