@@ -298,9 +298,20 @@ void Application::slotAccountStateAdded(AccountState *accountState)
     _gui->slotTrayMessageIfServerUnsupported(accountState->account().data());
     
     // Mount the virtual FileSystem.
-    #if defined(Q_OS_MAC)
-    cont = new LoopbackController("/Users/JesusDeloya/Pruebas_fuse", "/Volumes/loop", accountState, this);
-    #endif
+#if defined(Q_OS_MAC)
+    QString defaultPath = QDir::homePath() + QLatin1Char('/') + Theme::instance()->appName();
+    defaultPath = FolderMan::instance()->findGoodPathForNewSyncFolder(defaultPath, accountState->account()->url());
+
+    if(!QDir(defaultPath).exists())
+        QDir().mkdir(defaultPath);
+
+    QDir source(defaultPath);
+     if(source.exists()){
+        QString target = "/Volumes/" + source.dirName();
+        qDebug() << "FUSE trying to mount"<< target << "source from" << source.path();
+        cont = new LoopbackController(source.path(), target, accountState, this);
+     }
+#endif
 }
 
 void Application::slotCleanup()
